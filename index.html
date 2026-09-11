@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לו"ז ומשימות - הכנה ללידה</title>
+    <style>
+        :root {
+            --primary-color: #6b5b95;
+            --secondary-color: #feb236;
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        /* כפתורי מעבר תצוגה */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* טופס הוספת משימה */
+        .add-task-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .add-task-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-row input, .form-row select, .form-row button {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-row input[type="text"] {
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .form-row select {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .form-row input[type="text"].date-input {
+            flex: 1;
+            min-width: 90px;
+        }
+
+        .btn-add {
+            background-color: var(--primary-color);
+            color: white;
+            border: none !important;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-add:hover {
+            opacity: 0.9;
+        }
+
+        /* עיצוב כרטיסים וקטגוריות */
+        .category {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .category h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 5px;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-left: 12px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .task-label {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+
+        .task-date {
+            font-size: 0.85rem;
+            color: #777;
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        /* משימה בוצעה */
+        .completed .task-label {
+            text-decoration: line-through;
+            color: #a0a0a0;
+        }
+        .completed {
+            opacity: 0.65;
+        }
+
+        /* תצוגת ציר זמן */
+        .timeline {
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            right: 20px;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            padding: 5px 40px 10px 10px;
+            position: relative;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            right: 15px;
+            background-color: var(--card-bg);
+            border: 3px solid var(--secondary-color);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            padding: 12px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+        }
+
+        /* כפתור ייצוא קוד */
+        .export-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-export {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>לו"ז משימות והתארגנות 👶</h1>
+        <div class="view-toggle">
+            <button class="toggle-btn active" onclick="switchView('list')">תצוגת רשימה</button>
+            <button class="toggle-btn" onclick="switchView('weekly')">תצוגה שבועית</button>
+            <button class="toggle-btn" onclick="switchView('timeline')">ציר זמן</button>
+        </div>
+    </header>
+
+    <!-- טופס הוספת משימה -->
+    <div class="add-task-card">
+        <h3>➕ הוספת משימה חדשה</h3>
+        <div class="form-row">
+            <input type="text" id="newTaskText" placeholder="תיאור המשימה (משל: קניית מוצצים)">
+            <select id="newTaskCat">
+                <option value="לידה">לידה</option>
+                <option value="ציוד">ציוד</option>
+                <option value="פעולות">פעולות</option>
+            </select>
+            <input type="text" id="newTaskDateText" class="date-input" placeholder="תאריך (15.9)">
+            <button class="btn-add" onclick="addNewTask()">הוסף</button>
+        </div>
+    </div>
+
+    <!-- תצוגת רשימה -->
+    <div id="listView"></div>
+
+    <!-- תצוגה שבועית -->
+    <div id="weeklyView" class="hidden"></div>
+
+    <!-- תצוגת ציר זמן -->
+    <div id="timelineView" class="timeline hidden"></div>
+
+    <!-- כפתור לייצוא הקוד Hardcoded -->
+    <div class="export-section">
+        <button class="btn-export" onclick="exportHardcodedCode()">📥 העתק קוד עדכני (Hardcoded)</button>
+    </div>
+</div>
+
+<script>
+    // 1. נתוני בסיס (Hardcoded initial tasks)
+    const initialTasks = [
+        // לידה
+        { id: 1, cat: "לידה", text: "מלונית - לקבוע", dateText: "14.9", week: "שבוע 14.9 - 20.9" },
+        { id: 2, cat: "לידה", text: "קניית תחבושות - הזמנה באינטרנט", dateText: "14.9", week: "שבוע 14.9 - 20.9" },
+        { id: 3, cat: "לידה", text: "תיק לידה - להכין", dateText: "1.10", week: "שבוע 28.9 - 4.10" },
+
+        // ציוד
+        { id: 4, cat: "ציוד", text: "ארון - לקנות", dateText: "16.9", week: "שבוע 14.9 - 20.9" },
+        { id: 5, cat: "ציוד", text: "עגלה - לקנות", dateText: "1.10", week: "שבוע 28.9 - 4.10" },
+        { id: 6, cat: "ציוד", text: "כיסא תינוק - לקנות", dateText: "1.10", week: "שבוע 28.9 - 4.10" },
+        { id: 7, cat: "ציוד", text: "ביגוד - לקנות", dateText: "1.10", week: "שבוע 28.9 - 4.10" },
+        { id: 8, cat: "ציוד", text: "מיטה מתחברת", dateText: "ללא תאריך", week: "כללי / ללא תאריך" },
+
+        // פעולות
+        { id: 9, cat: "פעולות", text: "הלוואה ממנורה - 55k", dateText: "15.9", week: "שבוע 14.9 - 20.9" },
+        { id: 10, cat: "פעולות", text: "מידוף מטבח", dateText: "17.9", week: "שבוע 14.9 - 20.9" },
+        { id: 11, cat: "פעולות", text: "הגשת תביעה לביטוח", dateText: "17.9", week: "שבוע 14.9 - 20.9" },
+        { id: 12, cat: "פעולות", text: "סידור חדר עפרי (כולל ארון) - אחרי שיגיע הארון", dateText: "1.10", week: "שבוע 28.9 - 4.10" },
+        { id: 13, cat: "פעולות", text: "כיבוס בגדים רלוונטיים", dateText: "1.10", week: "שבוע 28.9 - 4.10" }
+    ];
+
+    // טעינת משימות ומצבי סימון מ-LocalStorage
+    let customTasks = JSON.parse(localStorage.getItem('birth_custom_tasks')) || [];
+    let allTasks = [...initialTasks, ...customTasks];
+    let savedState = JSON.parse(localStorage.getItem('birth_schedule_states')) || {};
+
+    function saveData() {
+        localStorage.setItem('birth_schedule_states', JSON.stringify(savedState));
+        localStorage.setItem('birth_custom_tasks', JSON.stringify(customTasks));
+    }
+
+    function toggleTask(id) {
+        savedState[id] = !savedState[id];
+        saveData();
+        render();
+    }
+
+    // פונקציה להוספת משימה חדשה
+    function addNewTask() {
+        const text = document.getElementById('newTaskText').value.trim();
+        const cat = document.getElementById('newTaskCat').value;
+        const dateText = document.getElementById('newTaskDateText').value.trim() || 'ללא תאריך';
+
+        if (!text) {
+            alert('נא להזין תיאור משימה');
+            return;
+        }
+
+        // חישוב שבוע מפתח לתצוגה שבועית
+        let week = "כללי / ללא תאריך";
+        if (dateText.includes("14.9") || dateText.includes("15.9") || dateText.includes("16.9") || dateText.includes("17.9")) {
+            week = "שבוע 14.9 - 20.9";
+        } else if (dateText.includes("1.10")) {
+            week = "שבוע 28.9 - 4.10";
+        } else if (dateText !== "ללא תאריך") {
+            week = `שבוע תאריך: ${dateText}`;
+        }
+
+        const newTask = {
+            id: Date.now(), // ID ייחודי מבוסס זמן
+            cat: cat,
+            text: text,
+            dateText: dateText,
+            week: week
+        };
+
+        customTasks.push(newTask);
+        allTasks.push(newTask);
+        saveData();
+        render();
+
+        // איפוס שדות הטופס
+        document.getElementById('newTaskText').value = '';
+        document.getElementById('newTaskDateText').value = '';
+    }
+
+    // רנדור המסך
+    function render() {
+        renderListView();
+        renderWeeklyView();
+        renderTimelineView();
+    }
+
+    // 1. תצוגת רשימה לפי קטגוריות
+    function renderListView() {
+        const listView = document.getElementById('listView');
+        listView.innerHTML = '';
+
+        const categories = ["לידה", "ציוד", "פעולות"];
+
+        categories.forEach(cat => {
+            const catTasks = allTasks.filter(t => t.cat === cat);
+            if (catTasks.length === 0) return;
+
+            const catDiv = document.createElement('div');
+            catDiv.className = 'category';
+            catDiv.innerHTML = `<h2>${cat}</h2>`;
+
+            catTasks.forEach(task => {
+                const isChecked = savedState[task.id] || false;
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item ${isChecked ? 'completed' : ''}`;
+                taskEl.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" id="list-${task.id}" ${isChecked ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <label for="list-${task.id}" class="task-label">${task.text}</label>
+                    <span class="task-date">${task.dateText}</span>
+                `;
+                catDiv.appendChild(taskEl);
+            });
+
+            listView.appendChild(catDiv);
+        });
+    }
+
+    // 2. תצוגה שבועית
+    function renderWeeklyView() {
+        const weeklyView = document.getElementById('weeklyView');
+        weeklyView.innerHTML = '';
+
+        // מקבצים לפי שבועות
+        const weeks = [...new Set(allTasks.map(t => t.week))];
+
+        weeks.forEach(week => {
+            const weekTasks = allTasks.filter(t => t.week === week);
+            if (weekTasks.length === 0) return;
+
+            const weekDiv = document.createElement('div');
+            weekDiv.className = 'category';
+            weekDiv.innerHTML = `<h2>📅 ${week}</h2>`;
+
+            weekTasks.forEach(task => {
+                const isChecked = savedState[task.id] || false;
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item ${isChecked ? 'completed' : ''}`;
+                taskEl.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" id="week-${task.id}" ${isChecked ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <label for="week-${task.id}" class="task-label"><strong>[${task.cat}]</strong> ${task.text}</label>
+                    <span class="task-date">${task.dateText}</span>
+                `;
+                weekDiv.appendChild(taskEl);
+            });
+
+            weeklyView.appendChild(weekDiv);
+        });
+    }
+
+    // 3. תצוגת ציר זמן
+    function renderTimelineView() {
+        const timelineView = document.getElementById('timelineView');
+        timelineView.innerHTML = '';
+
+        allTasks.forEach(task => {
+            const isChecked = savedState[task.id] || false;
+            const item = document.createElement('div');
+            item.className = 'timeline-item';
+            item.innerHTML = `
+                <div class="timeline-content ${isChecked ? 'completed' : ''}">
+                    <input type="checkbox" class="task-checkbox" id="time-${task.id}" ${isChecked ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <label for="time-${task.id}" class="task-label">
+                        <strong>[${task.cat}]</strong> ${task.text}
+                    </label>
+                    <span class="task-date">${task.dateText}</span>
+                </div>
+            `;
+            timelineView.appendChild(item);
+        });
+    }
+
+    // מעבר בין תצוגות
+    function switchView(view) {
+        document.getElementById('listView').classList.add('hidden');
+        document.getElementById('weeklyView').classList.add('hidden');
+        document.getElementById('timelineView').classList.add('hidden');
+
+        const buttons = document.querySelectorAll('.toggle-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        if (view === 'list') {
+            document.getElementById('listView').classList.remove('hidden');
+            buttons[0].classList.add('active');
+        } else if (view === 'weekly') {
+            document.getElementById('weeklyView').classList.remove('hidden');
+            buttons[1].classList.add('active');
+        } else {
+            document.getElementById('timelineView').classList.remove('hidden');
+            buttons[2].classList.add('active');
+        }
+    }
+
+    // ייצוא הקוד הנוכחי עם המשימות החדשות כ-Hardcoded
+    function exportHardcodedCode() {
+        const docHtml = document.documentElement.outerHTML;
+        // מחליף את מערך המשימות בקוד עם המצב העדכני ביותר
+        const tasksJson = JSON.stringify(allTasks, null, 8);
+        const updatedCode = docHtml.replace(/const initialTasks = \[[\s\S]*?\];/, `const initialTasks = ${tasksJson};`);
+        
+        navigator.clipboard.writeText("<!DOCTYPE html>\n" + updatedCode).then(() => {
+            alert('הקוד המלא כולל כל המשימות שהוספת הועתק ללוח! אפשר להדביק אותו בקובץ HTML מחדש.');
+        });
+    }
+
+    // הרצה ראשונית
+    render();
+</script>
+
+</body>
+</html>
